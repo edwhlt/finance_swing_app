@@ -1,0 +1,14 @@
+.idea
+EXE
+target
+out
+categories.csv
+comptes.csv
+finance_tiers.csv
+hs_err_pid17672.log
+mdps.csv
+replay_pid17672.log
+test.csv
+tiers.csv
+transactions.csv
+JavaApp.iml
