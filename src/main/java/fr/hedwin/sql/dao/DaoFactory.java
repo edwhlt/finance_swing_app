@@ -41,7 +41,7 @@ public class DaoFactory {
             System.out.println("'com.mysql.cj.jdbc.Driver' introuvable !");
             e.printStackTrace();
         }
-        if(daoFactory == null) daoFactory = new DaoFactory( "jdbc:mysql://2a01:cb0d:427:5300:ebdc:eb43:98f:f592:3306/finance?allowMultiQueries=true", "admin", "h^ltSfg9mfdq");
+        if(daoFactory == null) daoFactory = new DaoFactory( "jdbc:mysql://2001:861:3881:7650:b99c:57ad:8226:4f52:3307/finance?allowMultiQueries=true", "root", "h^ltSfg9mfdq");
         return daoFactory;
     }
 

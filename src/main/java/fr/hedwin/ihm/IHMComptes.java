@@ -57,12 +57,12 @@ public class IHMComptes extends JPanel {
 
     public IHMComptes(DataManager dataManager) throws DaoException, ParseException {
         this.dataManager = dataManager;
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setLayout(new BorderLayout());
 
         JToolBar tools = new JToolBar(JToolBar.HORIZONTAL);
         tools.setLayout(new BoxLayout(tools, BoxLayout.X_AXIS));
         tools.setMargin(new Insets(5, 0, 5, 0));
-        tools.setFloatable(false);
+        tools.setFloatable(true);
 
         JComboBox<Compte> comboBox = new JComboBox<>(dataManager.getCompteMap().values().toArray(Compte[]::new));
         comboBox.setRenderer((list, value, index, isSelected, cellHasFocus) -> new JLabel(value.getName()));
@@ -100,13 +100,18 @@ public class IHMComptes extends JPanel {
         JButton properties = new JButton(new FlatSVGIcon("images/properties_dark.svg"));
         JButton unsort = new JButton(new FlatSVGIcon("images/visibilitySort_dark.svg"));
         unsort.addActionListener(e -> {
+            JScrollBar scrollbar = scrollPane.getVerticalScrollBar();
             int max = scrollPane.getVerticalScrollBar().getMaximum();
             int min = scrollPane.getVerticalScrollBar().getMinimum();
-            if(scrollPane.getVerticalScrollBar().getValue() == min) for(int i = 0; i < 1000; i++){
+
+            if(scrollbar.getValue() == min) scrollbar.setValue(max);
+            else scrollbar.setValue(min);
+
+            /*if(scrollPane.getVerticalScrollBar().getValue() == min) for(int i = 0; i < 1000; i++){
                 scrollPane.getVerticalScrollBar().setValue(min + i*(max-min)/1000 );
-            }else  for(int i = 0; i < 1000; i++){
+            }else for(int i = 0; i < 1000; i++){
                 scrollPane.getVerticalScrollBar().setValue(max - i*(max-min)/1000 );
-            }
+            }*/
         });
 
         JComboBox<Integer> rowHeightCombo = new JComboBox<>(new Integer[]{20, 30, 40, 50, 60});
@@ -137,7 +142,7 @@ public class IHMComptes extends JPanel {
         tools.add(properties);
 
         JPanel content = new JPanel(new BorderLayout());
-        content.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+        content.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
         comboBox.addActionListener(e -> refresh.doClick());
         refresh.addActionListener(e -> {
@@ -168,10 +173,10 @@ public class IHMComptes extends JPanel {
 
         //combo selection appelle updateTable
         comboBox.setSelectedIndex(0);
-        rowHeightCombo.setSelectedIndex(1);
+        rowHeightCombo.setSelectedIndex(0);
 
-        add(tools);
-        add(content);
+        add(content, BorderLayout.CENTER);
+        add(tools, BorderLayout.NORTH);
     }
 
     public void updateTable(JPanel content, Compte compte, String dateFrom, String dateTo) throws DaoException, InterruptedException {
@@ -186,7 +191,7 @@ public class IHMComptes extends JPanel {
                     @Override
                     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                         JComponent jComponent = (JComponent) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                        jComponent.setBackground(Color.decode("#1A1A1A"));
+                        //jComponent.setBackground(jComponent.getBackground().darker());
                         return jComponent;
                     }
                 }, null),
@@ -399,12 +404,13 @@ public class IHMComptes extends JPanel {
 
         table.initFilter(columnCombo, filterField);
 
+        scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setViewportView(table);
 
         content.removeAll();
-        content.add(scrollPane, BorderLayout.CENTER);
+        content.add(scrollPane);
     }
 
 }

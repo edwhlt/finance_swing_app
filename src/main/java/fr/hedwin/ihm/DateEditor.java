@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 public class DateEditor extends AbstractCellEditor implements TableCellEditor {
-    private JDateChooser dateChooser = new JDateChooser();
+    private final JDateChooser dateChooser = new JDateChooser();
 
     public DateEditor() {
         for (Component component : dateChooser.getJCalendar().getDayChooser().getComponents()) {

@@ -1,19 +1,18 @@
 package fr.hedwin.ihm;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
+import org.jfree.chart.*;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
-public class Chart extends JFrame {
+public class Chart extends JPanel {
 
-    public Chart(String title) throws HeadlessException {
-        super(title);
+    public Chart() throws HeadlessException {
         // Create dataset
         DefaultCategoryDataset dataset = createDataset();
+
         // Create chart
         JFreeChart chart = ChartFactory.createLineChart(
                 "Solde Chart", // Chart title
@@ -21,9 +20,15 @@ public class Chart extends JFrame {
                 "Solde", // Y-Axis Label
                 dataset
         );
+        chart.setBackgroundPaint(UIManager.getColor("Panel.background"));
+        chart.getCategoryPlot().setBackgroundPaint(UIManager.getColor("Panel.background"));
 
-        ChartPanel panel = new ChartPanel(chart);
-        setContentPane(panel);
+        //ChartPanel panel = new ChartPanel(chart);
+        //panel.setSize(400, 400);
+        BufferedImage image = chart.createBufferedImage(400, 400);
+        JLabel chartLabel = new JLabel(new ImageIcon(image));
+
+        add(chartLabel);
     }
 
     private DefaultCategoryDataset createDataset() {

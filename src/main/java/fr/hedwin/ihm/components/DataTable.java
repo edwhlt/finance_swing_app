@@ -9,6 +9,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -101,14 +103,14 @@ public class DataTable<T> extends JTable {
             if(tableCellEditor != null) cm.getColumn(i).setCellEditor(column[i].tableCellEditor);
             if(tableCellRenderer != null) cm.getColumn(i).setCellRenderer(column[i].tableCellRenderer);
         }
-        getTableHeader().setDefaultRenderer(new DefaultTableCellRenderer(){
+        /*getTableHeader().setDefaultRenderer(new DefaultTableCellRenderer(){
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 JComponent jComponent = (JComponent) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 jComponent.setBackground(Color.decode("#1A1A1A"));
                 return jComponent;
             }
-        });
+        });*/
 
         for (int i = 0; i < columns.length; i++) {
             if(columns[i].getType().isAssignableFrom(Double.class)) getColumnModel().getColumn(i).setMaxWidth(70);
@@ -146,14 +148,14 @@ public class DataTable<T> extends JTable {
             if(tableCellEditor != null) cm.getColumn(i).setCellEditor(column[i].tableCellEditor);
             if(tableCellRenderer != null) cm.getColumn(i).setCellRenderer(column[i].tableCellRenderer);
         }
-        getTableHeader().setDefaultRenderer(new DefaultTableCellRenderer(){
+        /*getTableHeader().setDefaultRenderer(new DefaultTableCellRenderer(){
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 JComponent jComponent = (JComponent) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 jComponent.setBackground(Color.decode("#1A1A1A"));
                 return jComponent;
             }
-        });
+        });*/
 
         for (int i = 0; i < columns.length; i++) {
             if(columns[i].getType().isAssignableFrom(Double.class)) getColumnModel().getColumn(i).setMaxWidth(70);
@@ -202,6 +204,7 @@ public class DataTable<T> extends JTable {
         DataColumn<T, ?> dataColumn = (DataColumn<T, ?>) comboBox.getSelectedItem();
         String value = filterField.getText();
 
+        assert dataColumn != null;
         int columnIndex = getColumn(dataColumn.getName()).getModelIndex();
 
         RowFilter<TableModel, Object> rf;

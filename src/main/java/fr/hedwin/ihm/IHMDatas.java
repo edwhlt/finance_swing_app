@@ -106,7 +106,7 @@ public class IHMDatas extends JPanel {
                         @Override
                         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                             JComponent jComponent = (JComponent) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                            jComponent.setBackground(Color.decode("#1A1A1A"));
+                            //jComponent.setBackground(jComponent.getBackground().darker());
                             return jComponent;
                         }
                     }, null),
@@ -161,7 +161,7 @@ public class IHMDatas extends JPanel {
                         @Override
                         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                             JComponent jComponent = (JComponent) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                            jComponent.setBackground(Color.decode("#1A1A1A"));
+                            //jComponent.setBackground(jComponent.getBackground().darker());
                             return jComponent;
                         }
                     }, null),
@@ -208,7 +208,7 @@ public class IHMDatas extends JPanel {
                         @Override
                         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                             JComponent jComponent = (JComponent) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                            jComponent.setBackground(Color.decode("#1A1A1A"));
+                            //jComponent.setBackground(jComponent.getBackground().darker());
                             return jComponent;
                         }
                     }, null),
@@ -255,7 +255,7 @@ public class IHMDatas extends JPanel {
                         @Override
                         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                             JComponent jComponent = (JComponent) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                            jComponent.setBackground(Color.decode("#1A1A1A"));
+                            //jComponent.setBackground(jComponent.getBackground().darker());
                             return jComponent;
                         }
                     }, null),

@@ -8,19 +8,9 @@ public class IHMDash extends JPanel {
     public IHMDash(){
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        JButton button = new JButton("Chart");
-        button.addActionListener(e -> {
-            SwingUtilities.invokeLater(() -> {
-                Chart example = new Chart("Line Chart Example");
-                example.setAlwaysOnTop(true);
-                example.pack();
-                example.setSize(600, 400);
-                example.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-                example.setVisible(true);
-            });
-        });
+        Chart example = new Chart();
 
-        add(button, BorderLayout.CENTER);
+        add(example, BorderLayout.NORTH);
     }
 
 
