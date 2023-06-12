@@ -10,13 +10,11 @@ import fr.hedwin.sql.utils.SQLFunction;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class DaoFactory {
 
@@ -35,18 +33,27 @@ public class DaoFactory {
     }
 
     public static DaoFactory getInstance() {
+        Properties properties = new Properties();
+        try (FileInputStream fis = new FileInputStream("db.properties")) {
+            properties.load(fis);
+        } catch (IOException ignored) {}
+
+        String url = properties.getProperty("db.url", "localhost:3306");
+        String username = properties.getProperty("db.username", "root");
+        String password = properties.getProperty("db.password", "");
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.mariadb.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             System.out.println("'com.mysql.cj.jdbc.Driver' introuvable !");
             e.printStackTrace();
         }
-        if(daoFactory == null) daoFactory = new DaoFactory( "jdbc:mysql://2001:861:3881:7650:b99c:57ad:8226:4f52:3307/finance?allowMultiQueries=true", "root", "h^ltSfg9mfdq");
+        if(daoFactory == null) daoFactory = new DaoFactory(  "jdbc:mariadb://"+url+"/finance?allowMultiQueries=true", username, password);
         return daoFactory;
     }
 
     public Connection connection(String information) throws SQLException {
         Connection connexion = DriverManager.getConnection(url, username, password);
+        connexion.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
         //connexion.setAutoCommit(false);
         if(information != null) System.out.println("SQL Info: "+information);
         return connexion;
@@ -93,6 +100,7 @@ public class DaoFactory {
             resultat = statement.executeQuery(request);
             return procedure.apply(resultat);
         } catch (SQLException throwables) {
+            throwables.printStackTrace();
             throw DaoException.BDDErrorAcess(throwables);
         } finally {
             if(connexion != null) {
