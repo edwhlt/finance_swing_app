@@ -26,18 +26,19 @@ public class TransactionDaoImpl extends DaoAdapter<Integer, Transaction> {
 
     @Override
     public void add(Transaction transaction) throws DaoException {
-        int id = daoFactory.request("INSERT INTO transactions (tiers_id, information, remboursement, categorie_id, comptes_id, mdp_id, montant, date_op) VALUES (?,?,?,?,?,?,?,?);", "SELECT last_insert_id() as id;", preparedStatement -> {
+        int id = daoFactory.request("INSERT INTO transactions (tiers_id, information, remboursement, categorie_id, comptes_id, mdp_id, montant, `change`, date_op) VALUES (?,?,?,?,?,?,?,?,?);", "SELECT last_insert_id() as id;", preparedStatement -> {
             preparedStatement.setInt(1, transaction.getTiers_id());
             preparedStatement.setString(2, transaction.getInformation());
 
-            if(transaction.getRemboursement() != 0) preparedStatement.setInt(3, transaction.getRemboursement());
+            if(transaction.getRemboursement() != null) preparedStatement.setInt(3, transaction.getRemboursement());
             else preparedStatement.setNull(3, java.sql.Types.INTEGER);
 
             preparedStatement.setInt(4, transaction.getCategories_id());
             preparedStatement.setInt(5, transaction.getCompte_id());
             preparedStatement.setInt(6, transaction.getMdp_id());
             preparedStatement.setDouble(7, transaction.getMontant());
-            preparedStatement.setDate(8, new Date(transaction.getDate().getTime()));
+            preparedStatement.setDouble(8, transaction.getToEUR());
+            preparedStatement.setDate(9, new Date(transaction.getDate().getTime()));
         }, resultat -> {
             if(resultat.next()){
                 return resultat.getInt("id");
@@ -47,14 +48,38 @@ public class TransactionDaoImpl extends DaoAdapter<Integer, Transaction> {
         transaction.setId(id);
     }
 
+    @Override
+    public void add(List<Transaction> map) throws DaoException {
+        daoFactory.request("INSERT INTO transactions (tiers_id, information, remboursement, categorie_id, comptes_id, mdp_id, montant, `change`, date_op) VALUES (?,?,?,?,?,?,?,?,?);", preparedStatement -> {
+            for (Transaction transaction : map) {
+                preparedStatement.setInt(1, transaction.getTiers_id());
+                preparedStatement.setString(2, transaction.getInformation());
+                if(transaction.getRemboursement() != null) preparedStatement.setInt(3, transaction.getRemboursement());
+                else preparedStatement.setNull(3, java.sql.Types.INTEGER);
+                preparedStatement.setInt(4, transaction.getCategories_id());
+                preparedStatement.setInt(5, transaction.getCompte_id());
+                preparedStatement.setInt(6, transaction.getMdp_id());
+                preparedStatement.setDouble(7, transaction.getMontant());
+                preparedStatement.setDouble(8, transaction.getToEUR());
+                preparedStatement.setDate(9, new Date(transaction.getDate().getTime()));
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+        });
+    }
+
     public void update(int id, String key, Consumer<PreparedStatement> consumer) throws DaoException {
-        daoFactory.request("update transactions set "+key+" = ? where id = '"+id+"'", consumer::accept);
+        daoFactory.request("update transactions set "+key+" = ? where id = '"+id+"'", preparedStatement -> {
+            consumer.accept(preparedStatement);
+            preparedStatement.executeUpdate();
+        });
     }
 
     @Override
     public void delete(Integer id) throws DaoException {
         daoFactory.request("delete from transactions where id = ?;", preparedStatement -> {
             preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
         });
     }
 
@@ -136,14 +161,14 @@ public class TransactionDaoImpl extends DaoAdapter<Integer, Transaction> {
 
     public LinkedHashMap<Integer, TransactionTable> getTableElement(Compte compte, Map<Integer, Tiers> tiersMap, Map<Integer, Categorie> categorieMap, Map<Integer, PaymentType> mdps, String dateFrom, String dateTo) throws DaoException{
         return daoFactory.request("""
-        select t.id, t.tiers_id, t.information, t.remboursement, t.categorie_id, t.mdp_id, t.montant,
-        (select  cast((select SUM(montant) from transactions where t.comptes_id = comptes_id and t.date_op >= date_op) as decimal(10,2))) as solde, t.date_op from transactions as t
-        LEFT JOIN tiers as tid ON tid.id = t.tiers_id
-        LEFT JOIN tiers as rid ON rid.id = t.remboursement
-        LEFT JOIN comptes ON comptes.id = t.comptes_id
-        LEFT JOIN categorie ON categorie.id = t.categorie_id
-        LEFT JOIN mdp ON mdp.id = t.mdp_id
-        where t.comptes_id = """ +compte.getId()+" and t.date_op >= '"+dateFrom+"' and t.date_op <= '"+dateTo+"' order by t.date_op desc;", resultat -> {
+            select t.id, t.tiers_id, t.information, t.remboursement, t.categorie_id, t.mdp_id, t.montant, t.change,
+            (select  cast((select SUM(montant) from transactions where t.comptes_id = comptes_id and t.date_op >= date_op) as decimal(10,2))) as solde, t.date_op from transactions as t
+            LEFT JOIN tiers as tid ON tid.id = t.tiers_id
+            LEFT JOIN tiers as rid ON rid.id = t.remboursement
+            LEFT JOIN comptes ON comptes.id = t.comptes_id
+            LEFT JOIN categorie ON categorie.id = t.categorie_id
+            LEFT JOIN mdp ON mdp.id = t.mdp_id
+            where t.comptes_id =""" +compte.getId()+" and t.date_op >= '"+dateFrom+"' and t.date_op <= '"+dateTo+"' order by t.date_op desc;", resultat -> {
             LinkedHashMap<Integer, TransactionTable> elements = new LinkedHashMap<>();
 
             while(resultat.next()){
@@ -155,9 +180,10 @@ public class TransactionDaoImpl extends DaoAdapter<Integer, Transaction> {
                 int mdp_id = resultat.getInt("mdp_id");
                 double montant = resultat.getDouble("montant");
                 double solde = resultat.getDouble("solde");
+                double change = resultat.getDouble("change");
                 java.sql.Date date = resultat.getDate("date_op");
 
-                elements.put(id, new TransactionTable(id, tiersMap.get(tiers_id), infos, tiersMap.get(remboursement), compte, categorieMap.get(categorie_id), mdps.get(mdp_id), montant, solde, date.toLocalDate()));
+                elements.put(id, new TransactionTable(id, tiersMap.get(tiers_id), infos, tiersMap.get(remboursement), compte, categorieMap.get(categorie_id), mdps.get(mdp_id), montant, change, solde, date.toLocalDate()));
             }
 
             return elements;

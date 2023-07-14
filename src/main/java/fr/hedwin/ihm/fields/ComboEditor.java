@@ -8,20 +8,23 @@ import java.util.function.Supplier;
 
 public class ComboEditor<T> extends DefaultCellEditor {
 
-    private JComboBox<T> comboBox;
-    private Function<T, String> renderer;
+    private final DefaultComboBoxModel<T> comboBoxModel;
+    private final JComboBox<T> comboBox;
+    private final Function<T, String> renderer;
 
     public ComboEditor(T[] elements, Function<T, String> renderer) {
         super(new JTextField());
         this.renderer = renderer;
-        comboBox = new JComboBox<>(elements);
+        this.comboBoxModel = new DefaultComboBoxModel<>(elements);
+        comboBox = new JComboBox<>(comboBoxModel);
         comboBox.setRenderer((list, value, index, isSelected, cellHasFocus) -> value != null ? new JLabel(renderer.apply(value)) : new JLabel(""));
     }
 
-    public ComboEditor(T[] elements, Supplier<Comparator<T>> sort, Function<T, String> renderer) {
+    public ComboEditor(T[] elements, Comparator<T> sort, Function<T, String> renderer) {
         super(new JTextField());
         this.renderer = renderer;
-        comboBox = new JComboBox<>(new SortedComboBoxModel<>(elements, sort.get()));
+        this.comboBoxModel = new SortedComboBoxModel<>(elements, sort);
+        comboBox = new JComboBox<>(comboBoxModel);
         comboBox.setRenderer((list, value, index, isSelected, cellHasFocus) -> value != null ? new JLabel(renderer.apply(value)) : new JLabel(""));
     }
 
@@ -34,4 +37,11 @@ public class ComboEditor<T> extends DefaultCellEditor {
         return comboBox.getSelectedItem();
     }
 
+    public JComboBox<T> getComboBox() {
+        return comboBox;
+    }
+
+    public DefaultComboBoxModel<T> getComboBoxModel() {
+        return comboBoxModel;
+    }
 }

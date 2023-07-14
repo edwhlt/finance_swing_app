@@ -43,9 +43,12 @@ public class RightClickPopup extends JPopupMenu {
 
         JMenuItem del = new JMenuItem("Supprimer la ligne");
         del.addActionListener(e -> {
-            int result = JOptionPane.showConfirmDialog(this,
-                    "Êtes-vous sur de vouloir supprimer la transaction "+table.getValueAt(rowRightClicked, 0),
-                    "Suppression d'un élément", YES_NO_OPTION);
+            int result = 0;
+            if(id != -1){
+                 result = JOptionPane.showConfirmDialog(this,
+                        "Êtes-vous sur de vouloir supprimer la transaction "+table.getValueAt(rowRightClicked, 0),
+                        "Suppression d'un élément", YES_NO_OPTION);
+            }
             if(result == 0) onDeleteRow.accept(rowRightClicked);
         });
         add(del);

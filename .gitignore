@@ -12,4 +12,4 @@ test.csv
 tiers.csv
 transactions.csv
 JavaApp.iml
-db.properties
+src/main/resources/db.properties

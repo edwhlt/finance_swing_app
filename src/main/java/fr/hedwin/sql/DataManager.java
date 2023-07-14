@@ -10,12 +10,14 @@ import fr.hedwin.objects.Tiers;
 import fr.hedwin.sql.dao.DaoFactory;
 import fr.hedwin.sql.exceptions.DaoException;
 
+import javax.swing.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class DataManager {
@@ -70,6 +72,7 @@ public class DataManager {
         daoFactory.request("update categorie set name = ? where id = ?;", preparedStatement -> {
             preparedStatement.setString(1, name);
             preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
         });
         categorieMap.get(id).setName(name);
     }
@@ -77,12 +80,27 @@ public class DataManager {
     public void deleteCategorie(int id) throws DaoException {
         daoFactory.request("delete from categorie where id = ?;", preparedStatement -> {
             preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
         });
         categorieMap.remove(id);
     }
 
     public Map<Integer, Compte> getCompteMap() {
         return compteMap;
+    }
+
+    public Map<Integer, Compte> getCompteOrderMap() {
+        return compteMap.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getKey)).collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue,
+                (oldValue, newValue) -> oldValue, // Retain the existing value if the keys are duplicated
+                LinkedHashMap::new // Use a LinkedHashMap to preserve the order
+        ));
+    }
+
+    private Consumer<Map<Integer, Compte>> comptes;
+    public void setOnUpdateCompte(Consumer<Map<Integer, Compte>> comptes){
+        this.comptes = comptes;
     }
 
     public Compte addCompte(String name) throws DaoException {
@@ -96,6 +114,7 @@ public class DataManager {
         });
         Compte compte = new Compte(id, name);
         compteMap.put(id, new Compte(id, name));
+        comptes.accept(compteMap);
         return compte;
     }
 
@@ -103,15 +122,19 @@ public class DataManager {
         daoFactory.request("update comptes set name = ? where id = ?;", preparedStatement -> {
             preparedStatement.setString(1, name);
             preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
         });
         compteMap.get(id).setName(name);
+        comptes.accept(compteMap);
     }
 
     public void deleteCompte(int id) throws DaoException {
         daoFactory.request("delete from comptes where id = ?;", preparedStatement -> {
             preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
         });
         compteMap.remove(id);
+        comptes.accept(compteMap);
     }
 
     public Map<Integer, PaymentType> getPaymentTypeMap() {
@@ -137,6 +160,7 @@ public class DataManager {
         daoFactory.request("update mdp set name = ? where id = ?;", preparedStatement -> {
             preparedStatement.setString(1, name);
             preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
         });
         paymentTypeMap.get(id).setName(name);
     }
@@ -145,6 +169,7 @@ public class DataManager {
         daoFactory.request("update mdp set cm_name = ? where id = ?;", preparedStatement -> {
             preparedStatement.setString(1, regex);
             preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
         });
         paymentTypeMap.get(id).setRegex(regex);
     }
@@ -152,6 +177,7 @@ public class DataManager {
     public void deletePaymentType(int id) throws DaoException {
         daoFactory.request("delete from mdp where id = ?;", preparedStatement -> {
             preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
         });
         paymentTypeMap.remove(id);
     }
@@ -179,6 +205,7 @@ public class DataManager {
         daoFactory.request("update tiers set name = ? where id = ?;", preparedStatement -> {
             preparedStatement.setString(1, name);
             preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
         });
         tiersMap.get(id).setName(name);
     }
@@ -187,6 +214,7 @@ public class DataManager {
         daoFactory.request("update tiers set cm_name = ? where id = ?;", preparedStatement -> {
             preparedStatement.setString(1, regex);
             preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
         });
         tiersMap.get(id).setRegex(regex);
     }
@@ -194,6 +222,7 @@ public class DataManager {
     public void deleteTiers(int id) throws DaoException {
         daoFactory.request("delete from tiers where id = ?;", preparedStatement -> {
             preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
         });
         tiersMap.remove(id);
     }

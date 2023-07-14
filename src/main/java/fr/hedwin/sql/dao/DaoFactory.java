@@ -1,5 +1,6 @@
 package fr.hedwin.sql.dao;
 
+import fr.hedwin.Main;
 import fr.hedwin.ihm.IHMP;
 import fr.hedwin.objects.Transaction;
 import fr.hedwin.sql.ScriptRunner;
@@ -12,9 +13,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Properties;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DaoFactory {
 
@@ -34,8 +39,9 @@ public class DaoFactory {
 
     public static DaoFactory getInstance() {
         Properties properties = new Properties();
-        try (FileInputStream fis = new FileInputStream("db.properties")) {
-            properties.load(fis);
+        try {
+            InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("db.properties");
+            properties.load(inputStream);
         } catch (IOException ignored) {}
 
         String url = properties.getProperty("db.url", "localhost:3306");
@@ -70,8 +76,6 @@ public class DaoFactory {
             connexion = connection(null);
             statement = connexion.prepareStatement(request);
             procedure.accept(statement);
-            System.out.println(statement.toString());
-            statement.executeUpdate();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             throw DaoException.BDDErrorAcess(throwables);
@@ -87,7 +91,25 @@ public class DaoFactory {
     }
 
     public void request(String request) throws DaoException {
-        request(request, preparedStatement -> {});
+        request(request, preparedStatement -> {
+            preparedStatement.executeUpdate();
+        });
+    }
+
+    public <T> List<T> requestList(String request, SQLFunction<ResultSet, T> procedure) throws DaoException {
+        return request(request, (SQLFunction<ResultSet, List<T>>) resultSet ->
+            Stream.generate(() -> {
+                try {
+                    if(resultSet.next()) return procedure.apply(resultSet);
+                } catch (SQLException | DaoException e) {
+                    throw new RuntimeException(e);
+                }
+                return null;
+            })
+            .limit(Long.MAX_VALUE)
+            .takeWhile(Objects::nonNull)
+            .collect(Collectors.toCollection(LinkedList::new))
+        );
     }
 
     public <T> T request(String request, SQLFunction<ResultSet, T> procedure) throws DaoException {
@@ -123,7 +145,7 @@ public class DaoFactory {
             procedure.accept(statement);
             statement.executeUpdate();
 
-            ResultSet resultSet = statement.executeQuery(getRequest);
+            ResultSet resultSet = connexion.createStatement().executeQuery(getRequest);
 
             return result.apply(resultSet);
         } catch (SQLException throwables) {

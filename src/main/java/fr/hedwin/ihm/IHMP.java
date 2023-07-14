@@ -52,6 +52,7 @@ public class IHMP extends JFrame {
         onglets.addTab("Comptes bancaires", new FlatSVGIcon("images/DataTables.svg"), new IHMComptes(dataManager));
         onglets.addTab("Données", new FlatSVGIcon("images/dataSchema.svg"), new IHMDatas(dataManager));
         onglets.addTab("Scripts", new FlatSVGIcon("images/scripting_script_dark.svg"), new IHMScript(this, daoFactory));
+        onglets.addTab("Import", new FlatSVGIcon("images/import_dark.svg"), new IHMImport(this, dataManager));
         add(onglets, BorderLayout.CENTER);
 
         setResizable(true);

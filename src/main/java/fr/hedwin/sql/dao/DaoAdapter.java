@@ -3,6 +3,7 @@ package fr.hedwin.sql.dao;
 import fr.hedwin.sql.exceptions.DaoException;
 import fr.hedwin.sql.utils.Selectable;
 
+import java.util.List;
 import java.util.Map;
 
 public abstract class DaoAdapter<K, T> implements DaoInterface<K, T> {
@@ -13,7 +14,7 @@ public abstract class DaoAdapter<K, T> implements DaoInterface<K, T> {
     }
 
     @Override
-    public void add(Map<K, T> map) throws DaoException {
+    public void add(List<T> map) throws DaoException {
 
     }
 

@@ -64,9 +64,16 @@ public class IHMComptes extends JPanel {
         tools.setMargin(new Insets(5, 0, 5, 0));
         tools.setFloatable(true);
 
-        JComboBox<Compte> comboBox = new JComboBox<>(dataManager.getCompteMap().values().toArray(Compte[]::new));
+        JComboBox<Compte> comboBox = new JComboBox<>(dataManager.getCompteOrderMap().values().toArray(Compte[]::new));
         comboBox.setRenderer((list, value, index, isSelected, cellHasFocus) -> new JLabel(value.getName()));
         comboBox.setMaximumSize(comboBox.getPreferredSize());
+        dataManager.setOnUpdateCompte(comptes -> {
+            int current = comboBox.getSelectedIndex();
+            comboBox.removeAllItems();
+            comptes.values().forEach(comboBox::addItem);
+            comboBox.setSelectedIndex(current);
+        });
+
         JButton refresh = new JButton(new FlatSVGIcon("images/refresh_dark.svg"));
         JButton add = new JButton(new FlatSVGIcon("images/add_dark.svg"));
 
@@ -172,7 +179,7 @@ public class IHMComptes extends JPanel {
 
 
         //combo selection appelle updateTable
-        comboBox.setSelectedIndex(0);
+        comboBox.setSelectedIndex(1);
         rowHeightCombo.setSelectedIndex(0);
 
         add(content, BorderLayout.CENTER);
@@ -196,7 +203,7 @@ public class IHMComptes extends JPanel {
                     }
                 }, null),
                 column(Tiers.class, null, "Tiers", true, TransactionTable::getTiers,
-                        new ComboEditor<>(dataManager.getTiersMap().values().toArray(Tiers[]::new), () -> Comparator.comparing(Tiers::getName), Tiers::getName), new DefaultTableCellRenderer(){
+                        new ComboEditor<>(dataManager.getTiersMap().values().toArray(Tiers[]::new), Comparator.comparing(Tiers::getName), Tiers::getName), new DefaultTableCellRenderer(){
                     @Override
                     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                         return super.getTableCellRendererComponent(table, value != null ? ((Tiers) value).getName() : "", isSelected, hasFocus, row, column);
@@ -228,7 +235,7 @@ public class IHMComptes extends JPanel {
                     }
                 }),
                 column(Tiers.class, null, "Remboursement", true, TransactionTable::getRemboursement,
-                        new ComboEditor<>(remboursement.toArray(Tiers[]::new), () -> Comparator.comparing(Tiers::getName), Tiers::getName), new DefaultTableCellRenderer(){
+                        new ComboEditor<>(remboursement.toArray(Tiers[]::new), Comparator.comparing(Tiers::getName), Tiers::getName), new DefaultTableCellRenderer(){
                     @Override
                     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                         return super.getTableCellRendererComponent(table, value != null ? ((Tiers) value).getName() : "", isSelected, hasFocus, row, column);
@@ -248,7 +255,7 @@ public class IHMComptes extends JPanel {
                     }
                 }),
                 column(Categorie.class, null, "Catégorie", true, TransactionTable::getCategorie,
-                        new ComboEditor<>(dataManager.getCategorieMap().values().toArray(Categorie[]::new), () -> Comparator.comparing(Categorie::getName), Categorie::getName), new DefaultTableCellRenderer(){
+                        new ComboEditor<>(dataManager.getCategorieMap().values().toArray(Categorie[]::new), Comparator.comparing(Categorie::getName), Categorie::getName), new DefaultTableCellRenderer(){
                     @Override
                     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                         return super.getTableCellRendererComponent(table, value != null ? ((Categorie) value).getName() : "", isSelected, hasFocus, row, column);
@@ -267,7 +274,7 @@ public class IHMComptes extends JPanel {
                     }
                 }),
                 column(PaymentType.class, null, "Mode de payment", true, TransactionTable::getPaymentType,
-                        new ComboEditor<>(dataManager.getPaymentTypeMap().values().toArray(PaymentType[]::new), () -> Comparator.comparing(PaymentType::getName), PaymentType::getName), new DefaultTableCellRenderer(){
+                        new ComboEditor<>(dataManager.getPaymentTypeMap().values().toArray(PaymentType[]::new), Comparator.comparing(PaymentType::getName), PaymentType::getName), new DefaultTableCellRenderer(){
                     @Override
                     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                         return super.getTableCellRendererComponent(table, value != null ? ((PaymentType) value).getName() : "", isSelected, hasFocus, row, column);
@@ -309,6 +316,14 @@ public class IHMComptes extends JPanel {
                         e.printStackTrace();
                     }
                 }),
+                column(Double.class, 0.0, "EUR", false, TransactionTable::getToEUR, null, new DefaultTableCellRenderer() {
+                    @Override
+                    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                        JLabel component = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                        component.setHorizontalAlignment(SwingConstants.LEFT);
+                        return component;
+                    }
+                }, null),
                 column(Double.class, 0.0, "Solde", false, TransactionTable::getSolde, null, new DefaultTableCellRenderer() {
                     @Override
                     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -389,9 +404,10 @@ public class IHMComptes extends JPanel {
                 Categorie categorie = (Categorie) table.getValueAt(row, 4);
                 PaymentType mdp = (PaymentType) table.getValueAt(row, 5);
                 double montant = (double) table.getValueAt(row, 6);
-                LocalDate date = (LocalDate) table.getValueAt(row, 8);
+                double toEUR = (double) table.getValueAt(row, 7);
+                LocalDate date = (LocalDate) table.getValueAt(row, 9);
 
-                Transaction transaction = new Transaction(id, tiers.getId(), info, rembour == null ? 0 : rembour.getId(), compte.getId(), categorie.getId(), mdp.getId(), montant, Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                Transaction transaction = new Transaction(id, tiers.getId(), info, rembour == null ? 0 : rembour.getId(), compte.getId(), categorie.getId(), mdp.getId(), montant, toEUR, Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 try {
                     dataManager.getDaoFactory().getTransactionDao().add(transaction);
                     table.setValueAt(transaction.getId(), row, 0);

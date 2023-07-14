@@ -13,9 +13,10 @@ public class TransactionTable {
     private PaymentType paymentType;
     private double montant;
     private double solde;
+    private double toEUR;
     private LocalDate date;
 
-    public TransactionTable(int id, Tiers tiers, String information, Tiers remboursement, Compte compte, Categorie categorie, PaymentType paymentType, double montant, double solde, LocalDate date) {
+    public TransactionTable(int id, Tiers tiers, String information, Tiers remboursement, Compte compte, Categorie categorie, PaymentType paymentType, double montant, double toEUR, double solde, LocalDate date) {
         this.id = id;
         this.tiers = tiers;
         this.information = information;
@@ -24,6 +25,7 @@ public class TransactionTable {
         this.categorie = categorie;
         this.paymentType = paymentType;
         this.montant = montant;
+        this.toEUR = toEUR;
         this.solde = solde;
         this.date = date;
     }
@@ -62,6 +64,10 @@ public class TransactionTable {
 
     public double getSolde() {
         return solde;
+    }
+
+    public double getToEUR() {
+        return toEUR;
     }
 
     public LocalDate getDate() {

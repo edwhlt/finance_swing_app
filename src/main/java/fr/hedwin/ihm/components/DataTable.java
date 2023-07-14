@@ -9,10 +9,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.*;
-import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -22,7 +20,7 @@ import static javax.swing.SortOrder.*;
 
 public class DataTable<T> extends JTable {
 
-    private final DataColumn<T,?>[] columns;
+    private final DataColumn<T, ?>[] columns;
 
     public DataColumn<T, ?>[] getColumns() {
         return columns;
@@ -201,7 +199,7 @@ public class DataTable<T> extends JTable {
     }
 
     public void filter(){
-        DataColumn<T, ?> dataColumn = (DataColumn<T, ?>) comboBox.getSelectedItem();
+        DataColumn<T, ?> dataColumn = comboBox.getItemAt(comboBox.getSelectedIndex());
         String value = filterField.getText();
 
         assert dataColumn != null;
