@@ -42,8 +42,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "C:\Users\edwin\dev\PROJETS\.finance\JavaApp\EXE\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\edwin\dev\PROJETS\.finance\JavaApp\requests\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\Users\edwin\dev\PROJETS\.finance\JavaApp\EXE\logo_finance.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\edwin\dev\PROJETS\.finance\JavaApp\requests\*"; DestDir: "{app}/requests"; Flags: external ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\edwin\dev\PROJETS\.finance\JavaApp\EXE\logo_finance.ico"; DestDir: "{app}"; Flags: external ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
