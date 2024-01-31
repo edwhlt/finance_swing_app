@@ -63,6 +63,11 @@ public class MenuBar extends JMenuBar {
         changeTheme(fl);
     }
 
+    private static final List<Runnable> REFRESH_PAINT_REGISTER = new ArrayList<>();
+    public static void addRepaintOnRefresh(Runnable... runnables){
+        REFRESH_PAINT_REGISTER.addAll(List.of(runnables));
+    }
+
     private void changeTheme(LookAndFeel lookAndFeel){
         try {
             UIManager.setLookAndFeel(lookAndFeel);
@@ -70,6 +75,7 @@ public class MenuBar extends JMenuBar {
             ex.printStackTrace();
         }
         SwingUtilities.updateComponentTreeUI(SwingUtilities.getWindowAncestor(this));
+        REFRESH_PAINT_REGISTER.forEach(Runnable::run);
     }
 
     private void changeThemeClass(String className){
@@ -81,6 +87,7 @@ public class MenuBar extends JMenuBar {
             throw new RuntimeException(e);
         }
         SwingUtilities.updateComponentTreeUI(SwingUtilities.getWindowAncestor(this));
+        REFRESH_PAINT_REGISTER.forEach(Runnable::run);
     }
 
 }

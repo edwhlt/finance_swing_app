@@ -13,6 +13,8 @@ import org.jfree.data.general.PieDataset;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PieATBChart extends JPanel {
 
@@ -36,10 +38,16 @@ public class PieATBChart extends JPanel {
         plot.setSectionDepth(0.30);
         plot.setLabelGenerator(null);
 
-        new ChartUIProperties().setOn(chart);
+        this.refreshUI.add(() -> new ChartUIProperties().setOn(chart));
+        this.refreshUI();
         ChartPanel chartPanel = new ChartPanel(chart);
 
         add(chartPanel, BorderLayout.CENTER);
+    }
+
+    private final List<Runnable> refreshUI = new ArrayList<>();
+    public void refreshUI(){
+        this.refreshUI.forEach(Runnable::run);
     }
 
     private PieDataset<String> createDataset() {

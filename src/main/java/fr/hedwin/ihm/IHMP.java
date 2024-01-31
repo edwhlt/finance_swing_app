@@ -24,7 +24,8 @@ public class IHMP extends JFrame {
 
         //dataManager.exportToCSV("test.csv", "select 96, remboursement, information, categorie_id, 3, mdp_id, -montant, date_op from transactions where tiers_id = 5 and date_op <= '2020-08-01' order by date_op desc");
 
-        Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/icon.png"));
+        //Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/icon.png"));
+        Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/logo_finance.png"));
         setIconImage(icon);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {

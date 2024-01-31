@@ -19,6 +19,8 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BarMonthChart extends JPanel {
 
@@ -53,20 +55,30 @@ public class BarMonthChart extends JPanel {
         // Customize the domain (x) axis
         CategoryAxis domainAxis = plot.getDomainAxis();
         domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
+        domainAxis.setLabelFont(new Font("Arial", Font.PLAIN, 12));
         //domainAxis.setAxisLinePaint(Color.GREEN); // Set the color of the axis line
-        domainAxis.setLabelPaint(UIManager.getColor("Label.foreground")); // Set the color of the axis label
-        domainAxis.setTickLabelPaint(UIManager.getColor("Label.foreground")); // Set the color of the tick labels
-
         // Customize the range (y) axis
         NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setLabelFont(new Font("Arial", Font.PLAIN, 12));
         //rangeAxis.setAxisLinePaint(Color.MAGENTA); // Set the color of the axis line
-        rangeAxis.setLabelPaint(UIManager.getColor("Label.foreground")); // Set the color of the axis label
-        rangeAxis.setTickLabelPaint(UIManager.getColor("Label.foreground"));
 
-        new ChartUIProperties().setOn(chart);
+        this.refreshUI.add(() -> {
+            domainAxis.setLabelPaint(UIManager.getColor("Label.foreground"));
+            domainAxis.setTickLabelPaint(UIManager.getColor("Label.foreground"));
+            rangeAxis.setLabelPaint(UIManager.getColor("Label.foreground"));
+            rangeAxis.setTickLabelPaint(UIManager.getColor("Label.foreground"));
+        });
+
+        this.refreshUI.add(() -> new ChartUIProperties().setOn(chart));
+        this.refreshUI();
         ChartPanel chartPanel = new ChartPanel(chart);
 
         add(chartPanel, BorderLayout.CENTER);
+    }
+
+    private final List<Runnable> refreshUI = new ArrayList<>();
+    public void refreshUI(){
+        this.refreshUI.forEach(Runnable::run);
     }
 
     private DefaultCategoryDataset createDataset() {

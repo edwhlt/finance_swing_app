@@ -11,6 +11,7 @@ import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class ChartUIProperties {
 
@@ -27,6 +28,7 @@ public class ChartUIProperties {
         // Optional: Change the chart's title font and paint (color)
         TextTitle title = chart.getTitle();
         title.setPaint(UIManager.getColor("Label.foreground"));
+        title.setFont(new Font("Arial", Font.PLAIN, 16));
     }
 
 }
