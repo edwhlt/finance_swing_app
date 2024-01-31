@@ -3,6 +3,7 @@ EXE
 !EXE/finance_config_exe.xml
 !EXE/inno_setup_config.iss
 !EXE/logo_finance.ico
+!EXE/Output/finance.exe
 
 target
 out
