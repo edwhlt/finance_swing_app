@@ -13,3 +13,5 @@ tiers.csv
 transactions.csv
 JavaApp.iml
 src/main/resources/db.properties
+
+finance.sqlite

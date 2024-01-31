@@ -48,7 +48,7 @@ public class IHMP extends JFrame {
         //onglets.putClientProperty( TABBED_PANE_TAB_AREA_ALIGNMENT, TABBED_PANE_ALIGN_CENTER );
         //onglets.putClientProperty( TABBED_PANE_TAB_WIDTH_MODE, TABBED_PANE_TAB_WIDTH_MODE_EQUAL );
         //onglets.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        //onglets.addTab("Tableau de bord", new FlatSVGIcon("images/addToDictionary_dark.svg"), new IHMDash());
+        onglets.addTab("Tableau de bord", new FlatSVGIcon("images/addToDictionary_dark.svg"), new IHMDash(daoFactory));
         onglets.addTab("Comptes bancaires", new FlatSVGIcon("images/DataTables.svg"), new IHMComptes(dataManager));
         onglets.addTab("Données", new FlatSVGIcon("images/dataSchema.svg"), new IHMDatas(dataManager));
         onglets.addTab("Scripts", new FlatSVGIcon("images/scripting_script_dark.svg"), new IHMScript(this, daoFactory));

@@ -283,10 +283,10 @@ public class IHMImport  extends JPanel {
                 .map(l -> l.toArray(new Integer[0]))
                 .toArray(Integer[][]::new);
 
-
-        tiersChoose(0, idx, libelles, table, columnTiersIndex, scrollPane);
-
-        JOptionPane.showMessageDialog(this, "Tous les tiers ont été passé !");
+        if(idx.length > 0){
+            tiersChoose(0, idx, libelles, table, columnTiersIndex, scrollPane);
+            JOptionPane.showMessageDialog(this, "Tous les tiers ont été passé !");
+        }
 
         JButton send = new JButton(new FlatSVGIcon("images/commit_dark.svg"));
         send.addActionListener(e -> {
@@ -319,17 +319,23 @@ public class IHMImport  extends JPanel {
                     JOptionPane.showMessageDialog(this, "Vous devez choisir un colonne de montant correcte !");
                     return;
                 }
+                Date date;
                 try {
-                    Date date = new SimpleDateFormat("dd/MM/yyyy").parse(table.getValueAt(i, clmDate).toString());
-                    Transaction transaction = new Transaction(
-                            -1, nt.getId(), null, null, ((Compte) comboBox.getSelectedItem()).getId(),
-                            40, paymentType.getId(), amount, 1, date
-                    );
-                    transactions.add(transaction);
+                    date = new SimpleDateFormat("dd/MM/yyyy").parse(table.getValueAt(i, clmDate).toString());
                 } catch (ParseException ex) {
-                    JOptionPane.showMessageDialog(this, "Vous devez choisir un colonne de date au format (jj/MM/yyyy) pour les dates !");
-                    return;
+                    try {
+                        date = new SimpleDateFormat("yyyy-MM-dd").parse(table.getValueAt(i, clmDate).toString());
+                    } catch (ParseException ex2) {
+                        JOptionPane.showMessageDialog(this, "Vous devez choisir un colonne de date au format (jj/MM/yyyy) ou (yyyy-MM-dd) pour les dates !");
+                        return;
+                    }
                 }
+
+                Transaction transaction = new Transaction(
+                        -1, nt.getId(), null, null, ((Compte) comboBox.getSelectedItem()).getId(),
+                        40, paymentType.getId(), amount, 1, date
+                );
+                transactions.add(transaction);
             }
 
             try {

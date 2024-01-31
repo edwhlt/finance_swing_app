@@ -53,7 +53,7 @@ public class DaoFactory {
             System.out.println("'com.mysql.cj.jdbc.Driver' introuvable !");
             e.printStackTrace();
         }
-        if(daoFactory == null) daoFactory = new DaoFactory(  "jdbc:mariadb://"+url+"/finance?allowMultiQueries=true", username, password);
+        if(daoFactory == null) daoFactory = new DaoFactory("jdbc:mariadb://"+url+"/finance?allowMultiQueries=true", username, password);
         return daoFactory;
     }
 
